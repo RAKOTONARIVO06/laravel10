@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProduitController;
+use App\Http\Controllers\AuthController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,14 +23,45 @@ use App\Http\Controllers\UserController;
 //Route::delete(url,callback);
 //Route::patch(url,callback); pour faire aussi la modification des objects
 //Route::options(url,callback); pour récupérer des headers spécifiques
-
-Route::get('/', function () {
-    return (view('welcome'));
+Route::get('/',function(){
+    return redirect()->route('login');
 });
 
-Route::get('/home',function (){
-    return view('home', ['framework' => 'laravel']);
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+// Liste des produits
+Route::middleware('auth')->group(function () {
+Route::get('/articles', [ProduitController::class, 'index'])->name('articles.index');
+
+// Formulaire de création
+Route::get('/articles/create', [ProduitController::class, 'create'])->name('articles.create');
+
+// Stocker un nouvel article
+Route::post('/articles', [ProduitController::class, 'store'])->name('articles.store');
+
+// Afficher un article précis
+Route::get('/articles/{id}', [ProduitController::class, 'show'])->name('articles.show');
+
+// Formulaire d'édition
+Route::get('/articles/{id}/edit', [ProduitController::class, 'edit'])->name('articles.edit');
+
+// Mettre à jour un article
+Route::put('/articles/{id}', [ProduitController::class, 'update'])->name('articles.update');
+
+// Supprimer un article
+Route::delete('/articles/{id}', [ProduitController::class, 'destroy'])->name('articles.destroy');
 });
+
+// Route::get('/home',function (){
+//     return view('home', ['framework' => 'laravel']);
+// });
 
 
 // Route::get('/hello/{var}',function($var){
